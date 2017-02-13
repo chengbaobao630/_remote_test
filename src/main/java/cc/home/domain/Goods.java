@@ -5,7 +5,8 @@ package cc.home.domain;
  */
 public class Goods extends GeneticGoods<Object> {
 
-    public static void main(String[] args) {
-        Goods goods=new Goods();
+    @Override
+    public byte[] serialize() {
+        return new byte[0];
     }
 }

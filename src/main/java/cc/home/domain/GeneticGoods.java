@@ -1,5 +1,6 @@
 package cc.home.domain;
 
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
@@ -15,9 +16,9 @@ import java.util.Set;
 /**
  * Created by cheng on 2017/1/17 0017.
  */
-public abstract class GeneticGoods<V> implements PropertiesConstant {
+public abstract class GeneticGoods<V> implements PropertiesConstant, ProtoSerialize {
 
-    private static final Logger logger= LoggerFactory.getLogger(GeneticGoods.class);
+    private static final Logger logger = LoggerFactory.getLogger(GeneticGoods.class);
 
     private int id;
 
@@ -30,24 +31,30 @@ public abstract class GeneticGoods<V> implements PropertiesConstant {
 
     private Property[] properties;
 
-
-    public void setProperty(String k,Class aClass, V v) {
-        if (v.getClass() != aClass){
+    public void setProperty(String k, Class aClass, V v) {
+        if (v.getClass() != aClass) {
             logger.error("type and value not match!");
-            throw  new RuntimeException();
+            throw new RuntimeException();
         }
         size++;
         if (size > DEFAULT_PROPERTIES_CAPACITY) {
             grow();
         }
-        properties[size] = new Property(k,aClass, v);
+        properties[size] = new Property(k, aClass, v);
+    }
+
+    public Property getProperty(String k) {
+        if (StringUtils.isBlank(k)) return null;
+        for (Property property : this.properties) {
+            if (k.equalsIgnoreCase(property.getKey())) return property;
+        }
+        return null;
     }
 
     public void setProperties(Property... properties) {
         for (Property property : properties) {
-            setProperty(property.getKey(),property.getaClass(), (V) property.getValue());
+            setProperty(property.getKey(), property.getaClass(), (V) property.getValue());
         }
-
     }
 
     public Property[] getProperties() {
@@ -71,14 +78,13 @@ public abstract class GeneticGoods<V> implements PropertiesConstant {
         this.id = id;
     }
 
-
-
     private static class Property<T extends Object, V> {
 
+
         public Property(String key, Class<T> tClass, V value) {
-            if (value.getClass() != tClass){
+            if (value.getClass() != tClass) {
                 logger.error("value does not match type!");
-                throw  new RuntimeException();
+                throw new RuntimeException();
             }
             this.key = key;
             this.value = value;
@@ -90,7 +96,7 @@ public abstract class GeneticGoods<V> implements PropertiesConstant {
 
         private Set<String> keySet;
 
-        private Map<String,Class<T>> classMap;
+        private Map<String, Class<T>> classMap;
 
         private String key;
 
@@ -134,9 +140,4 @@ public abstract class GeneticGoods<V> implements PropertiesConstant {
         }
     }
 
-
-    public static void main(String[] args) {
-        Property property=new Property("isAuto",String.class,"adsasawdfa");
-        System.out.println(property);
-    }
 }

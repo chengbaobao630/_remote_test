@@ -1,6 +1,5 @@
 server:
         port : 7022
-
 spring:
     profiles:
           active:
@@ -31,10 +30,6 @@ spring:
                   port: 20880
                   accepts: 50
              scan: cc.home.remote.dubbo
-
-
-
-
 redis:
       host: 192.168.200.128
       port: 6379

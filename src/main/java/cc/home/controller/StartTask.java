@@ -25,42 +25,64 @@ public class StartTask {
 
 
     @RequestMapping("start")
-    private void init(){
+    public void init() {
         taskEngine.start();
     }
 
     @RequestMapping("task")
-    public void addTask(){
-        BaseTask baseTask=new BaseTask(10,2) {
+    public void addTask() {
+        BaseTask baseTask = new BaseTask(10, 2) {
 
         };
         baseTask.setTaskProcess(new TaskProcess() {
-            private  Thread thread;
+
+            private Thread thread;
+
+            private volatile Boolean shutdown = false;
+
             @Override
             public Object process(Task task) throws Exception {
-                while (true){
+
+                thread = Thread.currentThread();
+                for(;;){
+                    if (shutdown){
+                        return null;
+                    }
+                    System.out.println(this);
+                    System.out.println(StartTask.this);
                     Thread.sleep(2000);
-                    thread = Thread.currentThread();
                     System.out.println(thread.getId());
                     System.out.println(System.currentTimeMillis());
                 }
             }
 
             @Override
-            public  void shutdown() throws InterruptedException {
-                    System.out.println(thread.getId());
-                    thread.sleep(5000);
+            public void shutdown() throws InterruptedException {
+                System.out.println("shutdown ----------------- ----- --" + thread.getId());
+                System.out.println("shutdown ----------------- ----- --" + Thread.currentThread().getId());
+                synchronized (this) {
+                    System.out.println(this);
+                    stop();
+                }
             }
+
+
+            private void stop() throws InterruptedException {
+                shutdown = true;
+                this.wait();
+            }
+
         });
         baseTask.register();
     }
-     @RequestMapping("list")
-    public Map listTask(){
-       return TaskHelper.showTask();
+
+    @RequestMapping("list")
+    public Map listTask() {
+        return TaskHelper.showTask();
     }
 
     @RequestMapping("shutdown/{taskNum}")
-    public void shutdownTask(@PathVariable("taskNum")String taskNum){
+    public void shutdownTask(@PathVariable("taskNum") String taskNum) {
         TaskHelper.newInstance().shutdown(taskNum);
     }
 

@@ -26,6 +26,6 @@ public class ScheduleTestImpl implements ScheduleTest {
     @GET
     public String schedule(String name) {
 
-        return "success";
+        return "failed";
     }
 }
