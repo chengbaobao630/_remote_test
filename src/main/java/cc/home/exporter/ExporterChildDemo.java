@@ -8,4 +8,5 @@ import org.springframework.stereotype.Component;
 @Exporter(name ="exporterChildDemo")
 @Component
 public class ExporterChildDemo{
+
 }

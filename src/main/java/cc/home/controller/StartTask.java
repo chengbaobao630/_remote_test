@@ -6,6 +6,7 @@ import cc.home.jobber.TaskHelper;
 import cc.home.jobber.execute.process.TaskProcess;
 import cc.home.jobber.execute.task.BaseTask;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,10 +61,7 @@ public class StartTask {
             public void shutdown() throws InterruptedException {
                 System.out.println("shutdown ----------------- ----- --" + thread.getId());
                 System.out.println("shutdown ----------------- ----- --" + Thread.currentThread().getId());
-                synchronized (this) {
-                    System.out.println(this);
-                    stop();
-                }
+                thread.interrupt();
             }
 
 
@@ -82,8 +80,13 @@ public class StartTask {
     }
 
     @RequestMapping("shutdown/{taskNum}")
-    public void shutdownTask(@PathVariable("taskNum") String taskNum) {
+    public void shutdownTask(@PathVariable("taskNum")  String taskNum) {
         TaskHelper.newInstance().shutdown(taskNum);
+    }
+
+    @RequestMapping("shutdown")
+    public void shutdown() {
+        taskEngine.shutdown();
     }
 
 

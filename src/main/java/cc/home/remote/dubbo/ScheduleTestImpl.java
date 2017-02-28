@@ -13,6 +13,7 @@ import javax.ws.rs.Path;
  * Created by cheng on 2017/1/13 0013.
  */
 @Service(version = "1.0.0")
+//@org.springframework.stereotype.Service
 @Path("schedule")
 public class ScheduleTestImpl implements ScheduleTest {
 
